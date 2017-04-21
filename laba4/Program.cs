@@ -89,13 +89,17 @@ namespace laba4
         static void Main(string[] args)
         {
             int K = 15;
+            List<int[]> Images = new List<int[]>();
             int[] A = { 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, -1, 1, 1, -1, 1 };
-            int[] fAke= { 1, -1, 1, -1, 1, -1, -1, 1, -1, -1, 1, -1, -1, -1, -1 };
+            int[] fAke= { -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, -1, 1, -1, 1 };
             int[] I = { 1, 1, 1, -1, 1, -1, -1, 1, -1, -1, 1, -1, 1, 1, 1 };
             int[] F = { 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, -1, 1, -1, -1 };
+            Images.Add(A);
+            Images.Add(I);
+            Images.Add(F);
             int[] Y = new int[K];
             int[,] W = new int[K, K];
-            W = wMas(W,K,A);
+            W = wMas(W, K, A);
             W = wMas(W, K, I);
             W = wMas(W, K, F);
             for (int k = 0; k < K; k++)
@@ -111,11 +115,39 @@ namespace laba4
             exit(K, I, "I");
             exit(K, F, "F");
             exit(K, fAke, "f");
+            bool over = true;
             for (int k = 0; k < K; k++)
             {
                 Y[k] = fnet(W, fAke, k, K);
             }
+            int count = 1;
+            while (over)
+            {
+                foreach (var j in Images)
+                {
+                    if (Y.SequenceEqual(j))
+                    {
+                        over = false;
+                        break;
+                    }
+                }
+                if (over == false) break;
+                Y.CopyTo(fAke, 0);
+                for (int k = 0; k < K; k++)
+                {
+                    Y[k] = fnet(W, fAke, k, K);
+                }
+                count++;
+                if (count == 50)
+                {
+                   for(int i = 0; i < Y.Length; i++)
+                    {
+                        Y[i] = -Y[i];
+                    }
+                }
+            }           
             exit(K, Y, "n");
+            Console.WriteLine("За {0} эпох", count);
             Console.ReadKey();
         }
     }
